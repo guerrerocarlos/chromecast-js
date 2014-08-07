@@ -1,0 +1,30 @@
+{
+  "name": "chromecast-js",
+  "version": "0.0.1",
+  "description": "Chromecast/Googlecast streaming module all in JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guerrerocarlos/chromecast-js.git"
+  },
+  "keywords": [
+    "chromecast",
+    "googlecast",
+    "stream",
+    "streaming",
+    "torrentv"
+  ],
+  "author": "Carlos Guerrero <guerrerocarlos@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guerrerocarlos/chromecast-js/issues"
+  },
+  "homepage": "https://github.com/guerrerocarlos/chromecast-js",
+  "dependencies": {
+    "castv2-client": "0.0.2",
+    "mdns-js2": "0.0.5"
+  }
+}
