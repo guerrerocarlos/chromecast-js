@@ -3,9 +3,6 @@
   "version": "0.0.5",
   "description": "Chromecast/Googlecast streaming module all in JS",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/guerrerocarlos/chromecast-js.git"
@@ -31,9 +28,4 @@
     "debug": "^1.0.4",
     "mdns-js2": "0.0.5"
   },
-  "gitHead": "ec17d9eb5ab7fcf9de885fadaf4ceb977750af1b",
-  "readme": "ERROR: No README data found!",
-  "_id": "chromecast-js@0.0.3",
-  "_shasum": "0da46e936776854fb82fc2a29ae9c3fb95ae4817",
-  "_from": "chromecast-js@>=0.0.2"
 }
