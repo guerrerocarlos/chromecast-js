@@ -5,8 +5,8 @@ var Device = require('./device').Device
 var debug = require('debug')('chromecast-js')
 
 var Browser = function( options ) {
-      events.EventEmitter.call( this );
-      this.init( options );
+  events.EventEmitter.call( this );
+  this.init( options );
 };
 
 util.inherits( Browser, events.EventEmitter );
@@ -26,9 +26,7 @@ Browser.prototype.init = function( options ) {
   mdnsBrowser.on('update', function (device) {
       var dev_config = {addresses: device.addresses, name: device.name}
       self.device = new Device(dev_config)
-      self.device.on('connected', function(){
-        self.emit('deviceOn', self.device)
-      });
+      self.emit('deviceOn', self.device)
   });
 
 }

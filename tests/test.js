@@ -1,8 +1,13 @@
 chromecast = require('../')
 
-var chromecaster = new chromecast.Browser()
+var browser = new chromecast.Browser()
 
-chromecaster.on('onDevice', function(device){
+browser.on('deviceOn', function(device){
   console.log(device)
-  device.play('http://192.168.1.100:56502/')
+  device.connect()
+  device.on('connected', function(){
+    device.play('http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4', 60, function(){
+        console.log('Playing in your chromecast!')
+    })
+  })
 })
