@@ -73,4 +73,12 @@ Device.prototype.play = function(resource, n, callback){
 
 }
 
+Device.prototype.pause = function(callback){
+    var self = this
+    self.player.pause(callback)
+}
 
+Device.prototype.stop = function(callback){
+    var self = this
+    self.player.stop(callback)
+}
