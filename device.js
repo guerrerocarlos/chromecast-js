@@ -53,7 +53,7 @@ Device.prototype.init = function(){
 }
 
 
-Device.prototype.play = function(resource, n, callback){
+Device.prototype.load = function(resource, n, callback){
     var self = this
     var media = {
         contentId: resource,
@@ -76,6 +76,11 @@ Device.prototype.play = function(resource, n, callback){
 Device.prototype.pause = function(callback){
     var self = this
     self.player.pause(callback)
+}
+
+Device.prototype.play = function(callback){
+    var self = this
+    self.player.unpause(callback)
 }
 
 Device.prototype.stop = function(callback){
