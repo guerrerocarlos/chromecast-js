@@ -6,7 +6,7 @@ browser.on('deviceOn', function(device){
   device.connect()
   device.on('connected', function(){
 
-    device.load('http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4', 60, function(){
+    device.play('http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4', 60, function(){
         console.log('Playing in your chromecast!')
     });
 
@@ -17,17 +17,17 @@ browser.on('deviceOn', function(device){
     }, 30000);
 
     setTimeout(function(){
-        device.play(function(){
-            console.log('Paused!')
+        device.unpause(function(){
+            console.log('unpaused!')
         });
-    }, 30000);
+    }, 40000);
 
 
     setTimeout(function(){
         device.stop(function(){
             console.log('Stoped!')
         });
-    }, 40000);
+    }, 60000);
 
   })
 })
