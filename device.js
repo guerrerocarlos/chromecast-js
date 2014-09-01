@@ -59,12 +59,21 @@ Device.prototype.play = function(resource, n, subtitles, callback){
         contentId: resource,
         contentType: 'video/mp4'
     };
-    if(subtitles) {
-        var track1 = new chrome.cast.media.Track(1, chrome.cast.media.TrackType.TEXT);
-        track1.trackContentId = subtitles;
-        media.tracks = [track1];
-    }
     options = { autoplay: true }
+    if(subtitles) {
+        var englishSubtitle = new chrome.cast.media.Track(1, // track ID
+           chrome.cast.media.TrackType.TEXT);
+        englishSubtitle.trackContentId = subtitles;
+        englishSubtitle.contentType = 'text/vtt';
+        englishSubtitle.subtype = chrome.cast.media.TextTrackType.SUBTITLES;
+        englishSubtitle.name = 'English Subtitles';
+        englishSubtitle.language = 'en-US';
+        englishSubtitle.customData = null;
+        media.textTrackStyle = new chrome.cast.media.TextTrackStyle();
+
+        media.tracks = [englishSubtitle];
+        options['activeTrackIds'] = [1];
+    }
     if(n){
       options['currentTime'] = n
     }
