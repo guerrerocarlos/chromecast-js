@@ -53,19 +53,23 @@ Device.prototype.init = function(){
 }
 
 
-Device.prototype.play = function(resource, n, callback){
+Device.prototype.play = function(resource, n, subtitles, callback){
     var self = this
     var media = {
         contentId: resource,
         contentType: 'video/mp4'
     };
+    if(subtitles) {
+        var track1 = new chrome.cast.media.Track(1, chrome.cast.media.TrackType.TEXT);
+        track1.trackContentId = subtitles;
+        media.tracks = [track1];
+    }
     options = { autoplay: true }
     if(n){
       options['currentTime'] = n
     }
     self.player.load(media, options, function(err, status) {
         self.playing = true
-        console.log("calling callback")
         if(callback){
             callback(err,status)
         }
