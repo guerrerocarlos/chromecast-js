@@ -61,17 +61,15 @@ Device.prototype.play = function(resource, n, subtitles, callback){
     };
     options = { autoplay: true }
     if(subtitles) {
-        var englishSubtitle = new chrome.cast.media.Track(1, // track ID
-           chrome.cast.media.TrackType.TEXT);
-        englishSubtitle.trackContentId = subtitles;
-        englishSubtitle.contentType = 'text/vtt';
-        englishSubtitle.subtype = chrome.cast.media.TextTrackType.SUBTITLES;
-        englishSubtitle.name = 'English Subtitles';
-        englishSubtitle.language = 'en-US';
-        englishSubtitle.customData = null;
-        media.textTrackStyle = new chrome.cast.media.TextTrackStyle();
-
-        media.tracks = [englishSubtitle];
+        media.tracks = [{
+          trackId: 1,
+          type: 'TEXT',
+          trackContentId: subtitles.url,
+          trackContentType: 'text/vtt',
+          name: subtitles.name,
+          language: subtitles.language,
+          subtype: 'SUBTITLES'
+        }]
         options['activeTrackIds'] = [1];
     }
     if(n){
