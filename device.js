@@ -53,7 +53,7 @@ Device.prototype.init = function(){
 }
 
 
-Device.prototype.play = function(resource, n, subtitles, callback){
+Device.prototype.play = function(resource, n, subtitles, cover, callback){
     var self = this
     var media = {
         contentId: resource,
@@ -72,13 +72,24 @@ Device.prototype.play = function(resource, n, subtitles, callback){
         }]
         options['activeTrackIds'] = [1];
     }
+
+    if(cover) {
+        media.metadata = {
+          type: 0,
+          metadataType: 0,
+          title: cover.title,
+          images: [
+            { url: cover.url }
+          ]
+        }
+    }
+
     if(n){
       options['currentTime'] = n
     }
     self.player.load(media, options, function(err, status) {
         self.playing = true;
         self.timePosition = options['currentTime'];
-        console.log(self.timePosition)
         self.startedTime = process.hrtime()[0];
         if(callback){
             callback(err,status)
@@ -93,11 +104,9 @@ Device.prototype.seek = function(seconds, callback){
     self.timePosition += process.hrtime()[0] - self.startedTime
     var newCurrentTime = self.timePosition + seconds
 
-    console.log(self.timePosition)
     self.player.seek(newCurrentTime, function(){
         self.startedTime = process.hrtime()[0];
         self.timePosition = newCurrentTime
-        console.log(self.timePosition)
         self.playing = true
         callback()
     })
@@ -109,7 +118,6 @@ Device.prototype.pause = function(callback){
 
     self.playing = false
     self.timePosition += process.hrtime()[0] - self.startedTime
-    console.log(self.timePosition)
     self.player.pause(callback)
 }
 
@@ -117,7 +125,6 @@ Device.prototype.unpause = function(callback){
     var self = this
     self.playing = true
     self.startedTime = process.hrtime()[0];
-    console.log(self.timePosition)
     self.player.play(callback)
 }
 
