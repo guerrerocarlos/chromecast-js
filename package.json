@@ -1,6 +1,6 @@
 {
   "name": "chromecast-js",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Chromecast/Googlecast streaming module all in JS",
   "main": "index.js",
   "repository": {
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/guerrerocarlos/chromecast-js",
   "dependencies": {
-    "castv2-client": "0.0.2",
+    "castv2-client": "0.0.3",
     "debug": "^1.0.4",
     "mdns-js2": "0.0.5"
   }
