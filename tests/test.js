@@ -41,17 +41,42 @@ browser.on('deviceOn', function(device){
     }, 50000);
 
     setTimeout(function(){
+        device.pause(function(){
+            console.log('Paused!')
+        });
+    }, 70000);
+
+    setTimeout(function(){
+        device.seek(30,function(){
+            console.log('seeking forward!')
+        });
+    }, 80000);
+
+    setTimeout(function(){
+        device.seek(30,function(){
+            console.log('seeking forward!')
+        });
+    }, 85000);
+
+    setTimeout(function(){
+        device.unpause(function(){
+            console.log('unpaused!')
+        });
+    }, 90000);
+
+
+    setTimeout(function(){
         device.seek(-30,function(){
             console.log('seeking backwards!')
         });
-    }, 60000);
+    }, 100000);
 
 
     setTimeout(function(){
         device.stop(function(){
             console.log('Stoped!')
         });
-    }, 100000);
+    }, 200000);
 
   })
 })

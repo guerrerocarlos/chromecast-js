@@ -107,7 +107,6 @@ Device.prototype.seek = function(seconds, callback){
     self.player.seek(newCurrentTime, function(){
         self.startedTime = process.hrtime()[0];
         self.timePosition = newCurrentTime
-        self.playing = true
         callback()
     })
 
