@@ -53,19 +53,30 @@ Device.prototype.init = function(){
 }
 
 
-Device.prototype.play = function(resource, n, callback){
+Device.prototype.play = function(resource, n, subtitles, callback){
     var self = this
     var media = {
         contentId: resource,
         contentType: 'video/mp4'
     };
     options = { autoplay: true }
+    if(subtitles) {
+        media.tracks = [{
+          trackId: 1,
+          type: 'TEXT',
+          trackContentId: subtitles.url,
+          trackContentType: 'text/vtt',
+          name: subtitles.name,
+          language: subtitles.language,
+          subtype: 'SUBTITLES'
+        }]
+        options['activeTrackIds'] = [1];
+    }
     if(n){
       options['currentTime'] = n
     }
     self.player.load(media, options, function(err, status) {
         self.playing = true
-        console.log("calling callback")
         if(callback){
             callback(err,status)
         }
