@@ -2,25 +2,33 @@ chromecastjs = require('../')
 
 var browser = new chromecastjs.Browser()
 
-var subtitles = {
-    url: "https://raw.githubusercontent.com/googlecast/CastClosedCaptioning-chrome/master/captions_styled.vtt",
-    name: "English",
-    language: "en-US"
+var media : {
+    url : 'http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4',
+    subtitles: {
+        language: 'en-US',
+        url: "https://raw.githubusercontent.com/googlecast/CastClosedCaptioning-chrome/master/captions_styled.vtt",
+        name: "English",
+    },
+    cover: {
+        title: 'Big Bug Bunny',
+        url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg'
+    }
 }
 
-var cover = {
-    title: "Big Buck Bunny",
-    url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg'
-}
 
 browser.on('deviceOn', function(device){
   device.connect()
   device.on('connected', function(){
 
-    // Starting to play Big Buck Bunny (made in Blender) exactly in the first minute.
-    device.play('http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4', 60, subtitles, cover, function(){
+    // Starting to play Big Buck Bunny (made in Blender) exactly in the first minute without subtitles or cover.
+    //device.play('http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4', 60, subtitles, cover, function(){
+    //    console.log('Playing in your chromecast!')
+    //});
+
+    // Starting to play Big Buck Bunny (made in Blender) exactly in the first minute with example subtitles and cover.
+    device.play(resource, 0, function(){
         console.log('Playing in your chromecast!')
-    });
+    }
 
     setTimeout(function(){
         device.pause(function(){

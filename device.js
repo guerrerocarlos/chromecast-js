@@ -53,36 +53,42 @@ Device.prototype.init = function(){
 }
 
 
-Device.prototype.play = function(resource, n, subtitles, cover, callback){
+Device.prototype.play = function(resource, n, callback){
     var self = this
-    var media = {
-        contentId: resource,
-        contentType: 'video/mp4'
-    };
-    options = { autoplay: true }
-    if(subtitles) {
-        media.tracks = [{
-          trackId: 1,
-          type: 'TEXT',
-          trackContentId: subtitles.url,
-          trackContentType: 'text/vtt',
-          name: subtitles.name,
-          language: subtitles.language,
-          subtype: 'SUBTITLES'
-        }]
-        options['activeTrackIds'] = [1];
-    }
-
-    if(cover) {
-        media.metadata = {
-          type: 0,
-          metadataType: 0,
-          title: cover.title,
-          images: [
-            { url: cover.url }
-          ]
+    if(typeof(resource)=='string'){
+        var media = {
+            contentId: resource,
+            contentType: 'video/mp4'
+        };
+    }else{
+        var media = {
+            contentId: resource.url,
+            contentType: 'video/mp4'
+        };
+        if(resource.subtitles){
+            media.tracks = [{
+              trackId: 1,
+              type: 'TEXT',
+              trackContentId: resource.subtitles[0].url,
+              trackContentType: 'text/vtt',
+              name: resource.subtitles.name,
+              language: resource.subtitles[0].language,
+              subtype: 'SUBTITLES'
+            }]
+            options['activeTrackIds'] = [1];
+        }
+        if(resource.cover) {
+            media.metadata = {
+              type: 0,
+              metadataType: 0,
+              title: resource.cover.title,
+              images: [
+                { url: resource.cover.url }
+              ]
+            }
         }
     }
+    options = { autoplay: true }
 
     if(n){
       options['currentTime'] = n
