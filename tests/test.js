@@ -6,8 +6,8 @@ var media : {
     url : 'http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4',
     subtitles: {
         language: 'en-US',
-        url: "https://raw.githubusercontent.com/googlecast/CastClosedCaptioning-chrome/master/captions_styled.vtt",
-        name: "English",
+        url: 'https://raw.githubusercontent.com/googlecast/CastClosedCaptioning-chrome/master/captions_styled.vtt',
+        name: 'English',
     },
     cover: {
         title: 'Big Bug Bunny',
@@ -21,7 +21,7 @@ browser.on('deviceOn', function(device){
   device.on('connected', function(){
 
     // Starting to play Big Buck Bunny (made in Blender) exactly in the first minute without subtitles or cover.
-    //device.play('http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4', 60, subtitles, cover, function(){
+    //device.play('http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4', 60, function(){
     //    console.log('Playing in your chromecast!')
     //});
 
