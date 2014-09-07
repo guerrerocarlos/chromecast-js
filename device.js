@@ -55,6 +55,7 @@ Device.prototype.init = function(){
 
 Device.prototype.play = function(resource, n, callback){
     var self = this
+    options = {}
     if(typeof(resource)=='string'){
         var media = {
             contentId: resource,
@@ -71,7 +72,7 @@ Device.prototype.play = function(resource, n, callback){
               type: 'TEXT',
               trackContentId: resource.subtitles[0].url,
               trackContentType: 'text/vtt',
-              name: resource.subtitles.name,
+              name: resource.subtitles[0].name,
               language: resource.subtitles[0].language,
               subtype: 'SUBTITLES'
             }]

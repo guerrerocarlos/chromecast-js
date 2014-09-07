@@ -2,13 +2,13 @@ chromecastjs = require('../')
 
 var browser = new chromecastjs.Browser()
 
-var media : {
+var media = {
     url : 'http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4',
-    subtitles: {
+    subtitles: [{
         language: 'en-US',
         url: 'https://raw.githubusercontent.com/googlecast/CastClosedCaptioning-chrome/master/captions_styled.vtt',
         name: 'English',
-    },
+    }],
     cover: {
         title: 'Big Bug Bunny',
         url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg'
@@ -26,9 +26,9 @@ browser.on('deviceOn', function(device){
     //});
 
     // Starting to play Big Buck Bunny (made in Blender) exactly in the first minute with example subtitles and cover.
-    device.play(resource, 0, function(){
+    device.play(media, 0, function(){
         console.log('Playing in your chromecast!')
-    }
+    });
 
     setTimeout(function(){
         device.pause(function(){
