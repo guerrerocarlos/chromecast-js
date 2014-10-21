@@ -1,6 +1,6 @@
 {
   "name": "chromecast-js",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Chromecast/Googlecast streaming module all in JS",
   "main": "index.js",
   "repository": {
