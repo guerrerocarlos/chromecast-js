@@ -1,7 +1,7 @@
 chromecast-js
 =================
 
-chromecast-js is a javascript client library for googlecast's remote playback protocol that uses DefaultMediaReceiver to play any (compatible) content in the Chromecast.
+chromecast-js is a javascript client library for googlecast's remote playback protocol that uses DefaultMediaReceiver to play any (compatible) content in the Chromecast, it works by wrapping the [node-castv2-client](https://github.com/thibauts/node-castv2-client) module.
 
 ## Installation
 
