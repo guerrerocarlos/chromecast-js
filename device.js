@@ -55,7 +55,9 @@ Device.prototype.init = function(){
 
 Device.prototype.play = function(resource, n, callback){
     var self = this
-    options = {}
+
+    options = { autoplay: true }
+
     if(typeof(resource)=='string'){
         var media = {
             contentId: resource,
@@ -67,16 +69,28 @@ Device.prototype.play = function(resource, n, callback){
             contentType: 'video/mp4'
         };
         if(resource.subtitles){
-            media.tracks = [{
-              trackId: 1,
-              type: 'TEXT',
-              trackContentId: resource.subtitles[0].url,
-              trackContentType: 'text/vtt',
-              name: resource.subtitles[0].name,
-              language: resource.subtitles[0].language,
-              subtype: 'SUBTITLES'
-            }]
-            options['activeTrackIds'] = [1];
+            var tracks = [];
+            var i = 0;
+            for(var each in resource.subtitles ){
+                var track = {
+                  trackId: i,
+                  type: 'TEXT',
+                  trackContentId: resource.subtitles[i].url,
+                  trackContentType: 'text/vtt',
+                  name: resource.subtitles[i].name,
+                  language: resource.subtitles[i].language,
+                  subtype: 'SUBTITLES'
+                }
+                tracks.push(track)
+                i++;
+            }
+
+            media.tracks = tracks
+            options['activeTrackIds'] = [0];
+        }
+        if(resource.subtitles_style){
+            media.textTrackStyle = resource.subtitles_style
+            self.subtitles_style = resource.subtitles_style
         }
         if(resource.cover) {
             media.metadata = {
@@ -89,7 +103,6 @@ Device.prototype.play = function(resource, n, callback){
             }
         }
     }
-    options = { autoplay: true }
 
     if(n){
       options['currentTime'] = n
@@ -127,6 +140,13 @@ Device.prototype.pause = function(callback){
     self.player.pause(callback)
 }
 
+Device.prototype.setVolume = function(volume, callback){
+    var self = this
+
+    self.client.setVolume(volume, callback)
+}
+
+
 Device.prototype.unpause = function(callback){
     var self = this
     self.playing = true
@@ -139,3 +159,40 @@ Device.prototype.stop = function(callback){
     self.playing = false
     self.player.stop(callback)
 }
+
+Device.prototype.subtitlesOff = function(callback){
+    var self = this
+    self.player.media.sessionRequest({
+      type: 'EDIT_TRACKS_INFO',
+      activeTrackIds: [] // turn off subtitles.
+    },function(err, status){
+        if(err) callback(err)
+        callback(null, status)
+    });
+}
+
+Device.prototype.changeSubtitles = function(num, callback){
+    var self = this
+    self.player.media.sessionRequest({
+      type: 'EDIT_TRACKS_INFO',
+      activeTrackIds: [num] // turn off subtitles.
+    },function(err, status){
+        if(err) callback(err)
+        callback(null, status)
+    });
+}
+
+Device.prototype.changeSubtitlesSize = function(num, callback){
+    var self = this
+    var newStyle = self.subtitles_style
+    newStyle.fontScale = num
+    self.player.media.sessionRequest({
+      type: 'EDIT_TRACKS_INFO',
+      textTrackStyle: newStyle
+    },function(err, status){
+        if(err) callback(err)
+        callback(null, status)
+    });
+}
+
+
