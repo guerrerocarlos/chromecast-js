@@ -19,7 +19,7 @@ var media = {
         title: 'Big Bug Bunny',
         url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg'
     },
-    subtitles_style: { 
+    subtitles_style: {
           backgroundColor: '#FFFFFFFF', // see http://dev.w3.org/csswg/css-color/#hex-notation
           foregroundColor: '#000FFFF', // see http://dev.w3.org/csswg/css-color/#hex-notation
           edgeType: 'DROP_SHADOW', // can be: "NONE", "OUTLINE", "DROP_SHADOW", "RAISED", "DEPRESSED"
@@ -33,6 +33,21 @@ var media = {
           windowType: 'ROUNDED_CORNERS' // can be: "NONE", "NORMAL", "ROUNDED_CORNERS"
     }
 }
+
+var media = {
+    //"url":"http://192.168.0.100:4009/5%20-%203%20-%20Lecture%205.3%20-%20Opportunity%20identification%20(29-59).mp4",
+    //url : 'http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4',
+    url : "http://192.168.0.100:8899/6.11.mp4",
+    "subtitles":[{
+        "language":"en-US",
+        //"url":"http://192.168.0.100:9999/subtitles.vtt",
+
+        url: 'http://carlosguerrero.com/captions_styled.vtt',
+        "name":"Spanish"
+        }]
+    }
+
+var media = {"url":"http://192.168.0.100:8899/6.11.mp4","subtitles":[{"language":"en-US","url":"http://carlosguerrero.com/captions_styled.vtt","name":"Subtitle"}]}
 
 
 browser.on('deviceOn', function(device){
@@ -49,10 +64,10 @@ browser.on('deviceOn', function(device){
         console.log('Playing in your chromecast!')
 
         setTimeout(function(){
-            console.log("muting audio! (not working for the moment)")
+            console.log("muting audio!")
             device.setVolume( 0, function( err, newVol){
                 if(err) console.log("there was an error changing the volume.")
-                console.log('Volume Changed to: '+newVol)
+                console.log('Volume Changed to: '+newVol.level)
             });
         }, 15000);
 
@@ -63,6 +78,15 @@ browser.on('deviceOn', function(device){
                 console.log("subtitles removed.")
             });
         }, 20000);
+
+        setTimeout(function(){
+            console.log("restoring audio!")
+            device.setVolume( 1, function( err, newVol){
+                if(err) console.log("there was an error changing the volume.")
+                console.log('Volume Changed to: '+newVol.level)
+            });
+        }, 21000);
+
 
         setTimeout(function(){
             console.log('subtitles on!')
