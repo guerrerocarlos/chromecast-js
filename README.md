@@ -7,7 +7,7 @@ chromecast-js is a javascript client library for googlecast's remote playback pr
 
 From npm:
 
-	npm intall chromecast-js 
+	npm install chromecast-js 
 
 ## Usage
 
