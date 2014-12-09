@@ -118,26 +118,26 @@ Device.prototype.getStatus = function(callback) {
     var self = this;
     
     self.player.getStatus(function(err, status) {
-		if (err) {
-			console.log("getStatus error: %s", err.message);
-		} else {
-			callback(status);
-		}
+        if (err) {
+            console.log("getStatus error: %s", err.message);
+        } else {
+            callback(status);
+        }
     });
 };
 
 Device.prototype.seek = function(seconds, callback) {
     var self = this;
 
-	//Retrieve updated status just before seek
-	self.getStatus(function(newStatus) {
-		newCurrentTime = newStatus.currentTime + seconds;
-		self.player.seek(newCurrentTime, function() {
-			self.startedTime = process.hrtime()[0];
-			self.timePosition = newCurrentTime;
-			callback();
-		});
-	});
+    //Retrieve updated status just before seek
+    self.getStatus(function(newStatus) {
+        newCurrentTime = newStatus.currentTime + seconds;
+        self.player.seek(newCurrentTime, function() {
+            self.startedTime = process.hrtime()[0];
+            self.timePosition = newCurrentTime;
+            callback();
+        });
+    });
 };
 
 Device.prototype.pause = function(callback) {
