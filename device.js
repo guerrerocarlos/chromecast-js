@@ -129,18 +129,15 @@ Device.prototype.getStatus = function(callback) {
 Device.prototype.seek = function(seconds, callback) {
     var self = this;
 
-    self.timePosition += process.hrtime()[0] - self.startedTime;
-    var newCurrentTime = self.timePosition + seconds;
 	//Retrieve updated status just before seek
 	self.getStatus(function(newStatus) {
 		newCurrentTime = newStatus.currentTime + seconds;
+		self.player.seek(newCurrentTime, function() {
+			self.startedTime = process.hrtime()[0];
+			self.timePosition = newCurrentTime;
+			callback();
+		});
 	});
-
-    self.player.seek(newCurrentTime, function() {
-        self.startedTime = process.hrtime()[0];
-        self.timePosition = newCurrentTime;
-        callback();
-    });
 };
 
 Device.prototype.pause = function(callback) {
