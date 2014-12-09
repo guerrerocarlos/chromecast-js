@@ -103,9 +103,8 @@ Device.prototype.play = function(resource, n, callback){
         }
     }
 
-    if(n){
-      options['currentTime'] = n;
-    }
+    options['currentTime'] = n || 0;
+
     self.player.load(media, options, function(err, status) {
         self.playing = true;
         self.timePosition = options['currentTime'];
