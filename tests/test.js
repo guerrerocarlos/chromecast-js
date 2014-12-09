@@ -7,12 +7,12 @@ var media = {
     subtitles: [{
         language: 'en-US',
         url: 'http://carlosguerrero.com/captions_styled.vtt',
-        name: 'English',
+        name: 'English'
     },
     {
         language: 'es-ES',
         url: 'http://carlosguerrero.com/captions_styled_es.vtt',
-        name: 'Spanish',
+        name: 'Spanish'
     }
     ],
     cover: {
@@ -32,7 +32,7 @@ var media = {
           windowRoundedCornerRadius: 10, // radius in px
           windowType: 'ROUNDED_CORNERS' // can be: "NONE", "NORMAL", "ROUNDED_CORNERS"
     }
-}
+};
 
 var media = {
     //"url":"http://192.168.0.100:4009/5%20-%203%20-%20Lecture%205.3%20-%20Opportunity%20identification%20(29-59).mp4",
@@ -44,14 +44,13 @@ var media = {
 
         url: 'http://carlosguerrero.com/captions_styled.vtt',
         "name":"Spanish"
-        }]
-    }
+    }]
+};
 
-var media = {"url":"http://192.168.0.100:8899/6.11.mp4","subtitles":[{"language":"en-US","url":"http://carlosguerrero.com/captions_styled.vtt","name":"Subtitle"}]}
-
+var media = {"url":"http://192.168.0.100:8899/6.11.mp4","subtitles":[{"language":"en-US","url":"http://carlosguerrero.com/captions_styled.vtt","name":"Subtitle"}]};
 
 browser.on('deviceOn', function(device){
-  device.connect()
+  device.connect();
   device.on('connected', function(){
 
     // Starting to play Big Buck Bunny (made in Blender) exactly in the first minute without subtitles or cover.
@@ -61,129 +60,129 @@ browser.on('deviceOn', function(device){
 
     // Starting to play Big Buck Bunny (made in Blender) exactly in the first minute with example subtitles and cover.
     device.play(media, 0, function(){
-        console.log('Playing in your chromecast!')
+        console.log('Playing in your chromecast!');
 
         setTimeout(function(){
-            console.log("muting audio!")
+            console.log("muting audio!");
             device.setVolume( 0, function( err, newVol){
-                if(err) console.log("there was an error changing the volume.")
-                console.log('Volume Changed to: '+newVol.level)
+                if(err) console.log("there was an error changing the volume.");
+                console.log('Volume Changed to: '+newVol.level);
             });
         }, 15000);
 
         setTimeout(function(){
-            console.log('subtitles off!')
+            console.log('subtitles off!');
             device.subtitlesOff(function(err,status){
-                if(err) console.log("error setting subtitles off...")
-                console.log("subtitles removed.")
+                if(err) console.log("error setting subtitles off...");
+                console.log("subtitles removed.");
             });
         }, 20000);
 
         setTimeout(function(){
-            console.log("restoring audio!")
+            console.log("restoring audio!");
             device.setVolume( 1, function( err, newVol){
-                if(err) console.log("there was an error changing the volume.")
-                console.log('Volume Changed to: '+newVol.level)
+                if(err) console.log("there was an error changing the volume.");
+                console.log('Volume Changed to: '+newVol.level);
             });
         }, 21000);
 
 
         setTimeout(function(){
-            console.log('subtitles on!')
+            console.log('subtitles on!');
             device.changeSubtitles(1, function(err, status){
-                if(err) console.log("error restoring subtitles...")
-                console.log("subtitles restored.")
+                if(err) console.log("error restoring subtitles...");
+                console.log("subtitles restored.");
             });
         }, 25000);
 
         setTimeout(function(){
-            console.log('subtitles on!')
+            console.log('subtitles on!');
             device.changeSubtitles(1, function(err, status){
-                if(err) console.log("error restoring subtitles...")
-                console.log("subtitles restored.")
+                if(err) console.log("error restoring subtitles...");
+                console.log("subtitles restored.");
             });
         }, 25000);
 
         setTimeout(function(){
             device.pause(function(){
-                console.log('Paused!')
+                console.log('Paused!');
             });
         }, 30000);
 
         setTimeout(function(){
             device.unpause(function(){
-                console.log('unpaused!')
+                console.log('unpaused!');
             });
         }, 40000);
 
         setTimeout(function(){
-            console.log('I ment English subtitles!')
+            console.log('I ment English subtitles!');
             device.changeSubtitles(0, function(err, status){
-                if(err) console.log("error restoring subtitles...")
-                console.log("English subtitles restored.")
+                if(err) console.log("error restoring subtitles...");
+                console.log("English subtitles restored.");
             });
         }, 45000);
 
         setTimeout(function(){
-            console.log('Increasing subtitles size...')
+            console.log('Increasing subtitles size...');
             device.changeSubtitlesSize(10, function(err, status){
-                if(err) console.log("error increasing subtitles size...")
-                console.log("subtitles size increased.")
+                if(err) console.log("error increasing subtitles size...");
+                console.log("subtitles size increased.");
             });
         }, 46000);
 
         setTimeout(function(){
             device.seek(30,function(){
-                console.log('seeking forward!')
+                console.log('seeking forward!');
             });
         }, 50000);
 
         setTimeout(function(){
-            console.log('decreasing subtitles size...')
+            console.log('decreasing subtitles size...');
             device.changeSubtitlesSize(1, function(err, status){
-                if(err) console.log("error...")
-                console.log("subtitles size decreased.")
+                if(err) console.log("error...");
+                console.log("subtitles size decreased.");
             });
         }, 60000);
 
         setTimeout(function(){
             device.pause(function(){
-                console.log('Paused!')
+                console.log('Paused!');
             });
         }, 70000);
 
         setTimeout(function(){
             device.seek(30,function(){
-                console.log('seeking forward!')
+                console.log('seeking forward!');
             });
         }, 80000);
 
         setTimeout(function(){
             device.seek(30,function(){
-                console.log('seeking forward!')
+                console.log('seeking forward!');
             });
         }, 85000);
 
         setTimeout(function(){
             device.unpause(function(){
-                console.log('unpaused!')
+                console.log('unpaused!');
             });
         }, 90000);
 
 
         setTimeout(function(){
             device.seek(-30,function(){
-                console.log('seeking backwards!')
+                console.log('seeking backwards!');
             });
         }, 100000);
 
 
         setTimeout(function(){
             device.stop(function(){
-                console.log('Stoped!')
+                console.log('Stoped!');
             });
         }, 200000);
 
-    })
-  })
-})
+    });
+  });
+});
