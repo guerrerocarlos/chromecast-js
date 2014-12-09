@@ -106,8 +106,6 @@ Device.prototype.play = function(resource, n, callback) {
 
     self.player.load(media, options, function(err, status) {
         self.playing = true;
-        self.timePosition = options['currentTime'];
-        self.startedTime = process.hrtime()[0];
         if (callback){
             callback(err,status);
         }
@@ -129,12 +127,10 @@ Device.prototype.getStatus = function(callback) {
 Device.prototype.seek = function(seconds, callback) {
     var self = this;
 
-    //Retrieve updated status just before seek
+    // Retrieve updated status just before seek
     self.getStatus(function(newStatus) {
         newCurrentTime = newStatus.currentTime + seconds;
         self.player.seek(newCurrentTime, function() {
-            self.startedTime = process.hrtime()[0];
-            self.timePosition = newCurrentTime;
             callback();
         });
     });
@@ -144,7 +140,6 @@ Device.prototype.pause = function(callback) {
     var self = this;
 
     self.playing = false;
-    self.timePosition += process.hrtime()[0] - self.startedTime;
     self.player.pause(callback);
 };
 
@@ -157,7 +152,6 @@ Device.prototype.setVolume = function(volume, callback) {
 Device.prototype.unpause = function(callback) {
     var self = this;
     self.playing = true;
-    self.startedTime = process.hrtime()[0];
     self.player.play(callback);
 };
 
