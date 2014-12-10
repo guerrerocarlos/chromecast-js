@@ -118,13 +118,17 @@ Device.prototype.getStatus = function(callback) {
     });
 };
 
+// Seeks to specific offset in seconds into the media
+Device.prototype.seekTo = function(newCurrentTime, callback) {
+    self.player.seek(newCurrentTime, callback);
+};
+
+// Seeks in seconds relative to currentTime
 Device.prototype.seek = function(seconds, callback) {
     // Retrieve updated status just before seek
     self.getStatus(function(newStatus) {
         newCurrentTime = newStatus.currentTime + seconds;
-        self.player.seek(newCurrentTime, function() {
-            callback();
-        });
+        self.seekTo(newCurrentTime, callback);
     });
 };
 
