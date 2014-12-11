@@ -17,7 +17,9 @@ util.inherits(Device, events.EventEmitter);
 Device.prototype.connect = function(callback) {
     var self = this;
     
-	self.client = new Client();
+    // Always use a fresh client when connecting
+    if (self.client) self.client.close();
+    self.client = new Client();
     self.client.connect(self.host, function() {
         debug('connected, launching app ...');
         self.client.launch(DefaultMediaReceiver, function(err, player) {
