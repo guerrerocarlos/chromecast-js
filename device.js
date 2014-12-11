@@ -215,3 +215,11 @@ Device.prototype.changeSubtitlesSize = function(num, callback) {
         callback(null, status);
     });
 };
+
+Device.prototype.close = function(callback) {
+    if ( this.client ) {
+        this.client.close();
+    }
+    client = null;
+    if (callback) callback();
+}
