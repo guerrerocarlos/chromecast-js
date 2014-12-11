@@ -131,7 +131,7 @@ Device.prototype.getStatus = function(callback) {
 
 // Seeks to specific offset in seconds into the media
 Device.prototype.seekTo = function(newCurrentTime, callback) {
-    self.player.seek(newCurrentTime, callback);
+    this.player.seek(newCurrentTime, callback);
 };
 
 // Seeks in seconds relative to currentTime
@@ -155,7 +155,13 @@ Device.prototype.pause = function(callback) {
 Device.prototype.setVolume = function(volume, callback) {
     var self = this;
 
-    self.client.setVolume(volume, callback);
+    self.client.setVolume({ level: volume }, callback);
+};
+
+Device.prototype.setVolumeMuted = function(muted, callback){
+    var self = this;
+
+    self.client.setVolume({ 'muted': muted }, callback);
 };
 
 Device.prototype.unpause = function(callback) {
