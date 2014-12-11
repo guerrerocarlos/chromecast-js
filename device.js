@@ -22,6 +22,7 @@ Device.prototype.connect = function(callback) {
             } else {
                 self.player = player;
                 self.emit('connected');
+                if (callback) callback();
             }
 
             player.on('status', function(status) {
