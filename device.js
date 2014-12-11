@@ -14,6 +14,8 @@ exports.Device = Device;
 util.inherits(Device, events.EventEmitter);
 
 Device.prototype.connect = function(callback) {
+
+    self.client = new Client();
     self.client.connect(self.host, function() {
         debug('connected, launching app ...');
         self.client.launch(DefaultMediaReceiver, function(err, player) {
@@ -45,7 +47,6 @@ Device.prototype.connect = function(callback) {
 
 Device.prototype.init = function() {
     self = this;
-    self.client = new Client();
     self.host = self.config.addresses[0];
     self.playing = false;
 };
