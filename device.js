@@ -219,7 +219,7 @@ Device.prototype.changeSubtitlesSize = function(num, callback) {
 Device.prototype.close = function(callback) {
     if ( this.client ) {
         this.client.close();
+        this.client = null;
     }
-    client = null;
     if (callback) callback();
 }
