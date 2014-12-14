@@ -17,6 +17,9 @@ util.inherits(Device, events.EventEmitter);
 Device.prototype.connect = function(callback) {
     var self = this;
     
+    // Always use a fresh client when connecting
+    if (self.client) self.client.close();
+    self.client = new Client();
     self.client.connect(self.host, function() {
         debug('connected, launching app ...');
         self.client.launch(DefaultMediaReceiver, function(err, player) {
@@ -25,6 +28,7 @@ Device.prototype.connect = function(callback) {
             } else {
                 self.player = player;
                 self.emit('connected');
+                if (callback) callback();
             }
 
             player.on('status', function(status) {
@@ -48,7 +52,6 @@ Device.prototype.connect = function(callback) {
 Device.prototype.init = function() {
     var self = this;
     
-    self.client = new Client();
     self.host = self.config.addresses[0];
     self.playing = false;
 };
@@ -126,15 +129,19 @@ Device.prototype.getStatus = function(callback) {
     });
 };
 
+// Seeks to specific offset in seconds into the media
+Device.prototype.seekTo = function(newCurrentTime, callback) {
+    this.player.seek(newCurrentTime, callback);
+};
+
+// Seeks in seconds relative to currentTime
 Device.prototype.seek = function(seconds, callback) {
     var self = this;
 
     // Retrieve updated status just before seek
     self.getStatus(function(newStatus) {
         newCurrentTime = newStatus.currentTime + seconds;
-        self.player.seek(newCurrentTime, function() {
-            callback();
-        });
+        self.seekTo(newCurrentTime, callback);
     });
 };
 
@@ -148,7 +155,13 @@ Device.prototype.pause = function(callback) {
 Device.prototype.setVolume = function(volume, callback) {
     var self = this;
 
-    self.client.setVolume(volume, callback);
+    self.client.setVolume({ level: volume }, callback);
+};
+
+Device.prototype.setVolumeMuted = function(muted, callback){
+    var self = this;
+
+    self.client.setVolume({ 'muted': muted }, callback);
 };
 
 Device.prototype.unpause = function(callback) {
@@ -202,3 +215,11 @@ Device.prototype.changeSubtitlesSize = function(num, callback) {
         callback(null, status);
     });
 };
+
+Device.prototype.close = function(callback) {
+    if ( this.client ) {
+        this.client.close();
+        this.client = null;
+    }
+    if (callback) callback();
+}

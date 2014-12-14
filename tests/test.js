@@ -1,6 +1,11 @@
-chromecastjs = require('../')
+/**
+ * Test for all device calls.
+ * Recommended to be run with DEBUG=castv2 to see underlying protocol communication.
+ */
 
-var browser = new chromecastjs.Browser()
+chromecastjs = require('../');
+
+var browser = new chromecastjs.Browser();
 
 var media = {
     url : 'http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4',
@@ -34,6 +39,7 @@ var media = {
     }
 };
 
+/*
 var media = {
     //"url":"http://192.168.0.100:4009/5%20-%203%20-%20Lecture%205.3%20-%20Opportunity%20identification%20(29-59).mp4",
     //url : 'http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4',
@@ -48,6 +54,7 @@ var media = {
 };
 
 var media = {"url":"http://192.168.0.100:8899/6.11.mp4","subtitles":[{"language":"en-US","url":"http://carlosguerrero.com/captions_styled.vtt","name":"Subtitle"}]};
+*/
 
 browser.on('deviceOn', function(device){
   device.connect();
@@ -63,26 +70,42 @@ browser.on('deviceOn', function(device){
         console.log('Playing in your chromecast!');
 
         setTimeout(function(){
-            console.log("muting audio!");
-            device.setVolume( 0, function( err, newVol){
+            console.log('lowering volume');
+            device.setVolume( 0.25, function( err, newVol){
                 if(err) console.log("there was an error changing the volume.");
-                console.log('Volume Changed to: '+newVol.level);
+                else console.log('Volume Changed to: '+newVol.level);
             });
         }, 15000);
+        
+        setTimeout(function() {
+            console.log('muting audio');
+            device.setVolumeMuted(true, function(err, newVol) {
+                if(err) console.log("there was an error muting the volume.");
+                else console.log('newVol', newVol);
+            });
+        }, 18000);
+        
+        setTimeout(function() {
+            console.log('unmuting audio');
+            device.setVolumeMuted(false, function(err, newVol) {
+                if(err) console.log("there was an error muting the volume.");
+                else console.log('newVol', newVol);
+            });
+        }, 19500);
 
         setTimeout(function(){
             console.log('subtitles off!');
             device.subtitlesOff(function(err,status){
                 if(err) console.log("error setting subtitles off...");
-                console.log("subtitles removed.");
+                else console.log("subtitles removed.");
             });
         }, 20000);
 
         setTimeout(function(){
             console.log("restoring audio!");
-            device.setVolume( 1, function( err, newVol){
+            device.setVolume( 0.5, function( err, newVol){
                 if(err) console.log("there was an error changing the volume.");
-                console.log('Volume Changed to: '+newVol.level);
+                else console.log('Volume Changed to: '+newVol.level);
             });
         }, 21000);
 
@@ -91,7 +114,7 @@ browser.on('deviceOn', function(device){
             console.log('subtitles on!');
             device.changeSubtitles(1, function(err, status){
                 if(err) console.log("error restoring subtitles...");
-                console.log("subtitles restored.");
+                else console.log("subtitles restored.");
             });
         }, 25000);
 
@@ -99,7 +122,7 @@ browser.on('deviceOn', function(device){
             console.log('subtitles on!');
             device.changeSubtitles(1, function(err, status){
                 if(err) console.log("error restoring subtitles...");
-                console.log("subtitles restored.");
+                else console.log("subtitles restored.");
             });
         }, 25000);
 
@@ -119,7 +142,7 @@ browser.on('deviceOn', function(device){
             console.log('I ment English subtitles!');
             device.changeSubtitles(0, function(err, status){
                 if(err) console.log("error restoring subtitles...");
-                console.log("English subtitles restored.");
+                else console.log("English subtitles restored.");
             });
         }, 45000);
 
@@ -127,7 +150,7 @@ browser.on('deviceOn', function(device){
             console.log('Increasing subtitles size...');
             device.changeSubtitlesSize(10, function(err, status){
                 if(err) console.log("error increasing subtitles size...");
-                console.log("subtitles size increased.");
+                else console.log("subtitles size increased.");
             });
         }, 46000);
 
@@ -141,7 +164,7 @@ browser.on('deviceOn', function(device){
             console.log('decreasing subtitles size...');
             device.changeSubtitlesSize(1, function(err, status){
                 if(err) console.log("error...");
-                console.log("subtitles size decreased.");
+                else console.log("subtitles size decreased.");
             });
         }, 60000);
 
@@ -176,12 +199,39 @@ browser.on('deviceOn', function(device){
             });
         }, 100000);
 
+        setTimeout(function(){
+            device.seekTo(0,function(){
+                console.log('seeking back to start!');
+            });
+        }, 110000);
+        
+        setTimeout(function(){
+            device.seekTo(300,function(){
+                console.log('seeking to exactly 5 mins!');
+            });
+        }, 120000);
 
+        setTimeout(function(){
+            device.getStatus(function(status) {
+                device.seekTo( status.media.duration - 100 ,function(){
+                    console.log('seeking to 100 sec before end!');
+                });
+            });
+        }, 130000);
+        
         setTimeout(function(){
             device.stop(function(){
                 console.log('Stoped!');
             });
-        }, 200000);
+        }, 150000);
+        
+        //Connection still alive and heartbeats being sent between these two.
+        
+        setTimeout(function(){
+            device.close(function(){
+                console.log('Closed!');
+            });
+        }, 170000);
 
     });
   });
