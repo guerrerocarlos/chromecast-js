@@ -16,8 +16,8 @@ exports.Browser = Browser;
 
 Browser.prototype.update = function( device ) {
     var dev_config = {addresses: device.addresses, name: device.name};
-    self.device = new Device(dev_config);
-    self.emit('deviceOn', self.device);
+    this.device = new Device(dev_config);
+    this.emit('deviceOn', this.device);
 }
 
 Browser.prototype.init = function( options ) {
