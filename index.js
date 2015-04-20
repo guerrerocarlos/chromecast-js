@@ -5,6 +5,8 @@ var http = require('http');
 var Device = require('./device').Device;
 var debug = require('debug')('chromecast-js');
 
+exports.Device = Device;
+
 var Browser = function( options ) {
   events.EventEmitter.call( this );
   this.init( options );
