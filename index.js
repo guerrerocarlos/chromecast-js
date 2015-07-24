@@ -1,5 +1,6 @@
 var util = require( 'util' );
 var events = require( 'events' );
+var os = require( 'os' );
 var ssdp = require('node-ssdp').Client;
 var http = require('http');
 var Device = require('./device').Device;
@@ -24,27 +25,35 @@ Browser.prototype.update = function( device ) {
 
 Browser.prototype.init = function( options ) {
   var self = this;
+  var responseCallback = function (headers, statusCode, rinfo) {
+    if (statusCode !== 200) return;
+    if (!headers['LOCATION']) return;
 
-  var ssdpBrowser = new ssdp();
-  ssdpBrowser.on('response', function (headers, statusCode, rinfo) {
-      if (statusCode != 200)
-		  return;
-	  if (!headers['LOCATION'])
-		  return;
-	  var request = http.get(headers['LOCATION'], function(res) {
-		  var body = '';
-		  res.on('data', function(chunk) {
-		    body += chunk;
-		  });
-		  res.on('end', function() {
-			  if (body.search('<manufacturer>Google Inc.</manufacturer>') == -1)
-				  return;
-			  var match = body.match(/<friendlyName>(.+?)<\/friendlyName>/);
-			  if (!match || match.length != 2)
-				  return;
-			  self.update({addresses: [rinfo.address], name: match[1]});
-		  });
-	  });
+    var request = http.get(headers['LOCATION'], function(res) {
+      var body = '';
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+      res.on('end', function() {
+        if (body.search('<manufacturer>Google Inc.</manufacturer>') == -1)
+          return;
+        var match = body.match(/<friendlyName>(.+?)<\/friendlyName>/);
+        if (!match || match.length != 2)
+          return;
+        self.update({addresses: [rinfo.address], name: match[1]});
+      });
+    });
+  };
+
+  var networkInterfaces = os.networkInterfaces();
+  Object.keys(networkInterfaces).forEach(function (type) {
+    networkInterfaces[type].forEach(function (networkInterface) {
+      if (networkInterface.internal) return;
+      var ssdpBrowser = new ssdp({
+        unicastHost: networkInterface.address
+      });
+      ssdpBrowser.on('response', responseCallback);
+      ssdpBrowser.search('urn:dial-multiscreen-org:service:dial:1');
+    });
   });
-  ssdpBrowser.search('urn:dial-multiscreen-org:service:dial:1');
 };
