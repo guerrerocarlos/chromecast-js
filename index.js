@@ -37,8 +37,6 @@ Browser.prototype.init = function( options ) {
 		    body += chunk;
 		  });
 		  res.on('end', function() {
-			  if (body.search('<manufacturer>Google Inc.</manufacturer>') == -1)
-				  return;
 			  var match = body.match(/<friendlyName>(.+?)<\/friendlyName>/);
 			  if (!match || match.length != 2)
 				  return;
