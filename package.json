@@ -27,5 +27,8 @@
     "castv2-client": "0.0.8",
     "debug": "^1.0.4",
     "node-ssdp": "^2.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^1.1.0"
   }
 }
