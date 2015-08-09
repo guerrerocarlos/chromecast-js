@@ -1,48 +1,49 @@
-var util = require( 'util' );
-var events = require( 'events' );
-var ssdp = require('node-ssdp').Client;
+'use strict';
+
+var events = require('events');
 var http = require('http');
+var util = require('util');
+
 var Device = require('./device').Device;
-var debug = require('debug')('chromecast-js');
+var SsdpClient = require('node-ssdp').Client;
 
-exports.Device = Device;
-
-var Browser = function( options ) {
-  events.EventEmitter.call( this );
-  this.init( options );
-};
-
-util.inherits(Browser, events.EventEmitter );
-
-exports.Browser = Browser;
-
-Browser.prototype.update = function( device ) {
-    var dev_config = {addresses: device.addresses, name: device.name};
-    this.device = new Device(dev_config);
-    this.emit('deviceOn', this.device);
+function Browser(options) {
+  events.EventEmitter.call(this);
+  this.init(options);
 }
 
-Browser.prototype.init = function( options ) {
-  var self = this;
+Browser.prototype.update = function(device) {
+  var devConfig = {addresses: device.addresses, name: device.name};
+  this.device = new Device(devConfig);
+  this.emit('deviceOn', this.device);
+};
 
-  var ssdpBrowser = new ssdp();
-  ssdpBrowser.on('response', function (headers, statusCode, rinfo) {
-      if (statusCode != 200)
-		  return;
-	  if (!headers['LOCATION'])
-		  return;
-	  var request = http.get(headers['LOCATION'], function(res) {
-		  var body = '';
-		  res.on('data', function(chunk) {
-		    body += chunk;
-		  });
-		  res.on('end', function() {
-			  var match = body.match(/<friendlyName>(.+?)<\/friendlyName>/);
-			  if (!match || match.length != 2)
-				  return;
-			  self.update({addresses: [rinfo.address], name: match[1]});
-		  });
-	  });
+Browser.prototype.init = function() {
+  var _this = this;
+
+  var ssdpBrowser = new SsdpClient();
+  ssdpBrowser.on('response', function(headers, statusCode, rinfo) {
+    if (statusCode !== 200 || !headers.LOCATION) {
+      return;
+    }
+    http.get(headers.LOCATION, function(res) {
+      var body = '';
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+      res.on('end', function() {
+        var match = body.match(/<friendlyName>(.+?)<\/friendlyName>/);
+        if (!match || match.length !== 2) {
+          return;
+        }
+        _this.update({addresses: [rinfo.address], name: match[1]});
+      });
+    });
   });
   ssdpBrowser.search('urn:dial-multiscreen-org:service:dial:1');
 };
+
+util.inherits(Browser, events.EventEmitter);
+
+exports.Browser = Browser;
+exports.Device = Device;
