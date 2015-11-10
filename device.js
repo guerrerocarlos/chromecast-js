@@ -1,67 +1,74 @@
-var Client                = require('castv2-client').Client;
+var Client = require('castv2-client').Client;
 var DefaultMediaReceiver  = require('castv2-client').DefaultMediaReceiver;
+
 var events = require('events');
 var util = require('util');
-var debug = require('debug')('Device');
+var debug = require('debug')('chromecast-js');
+
+/* Chromecast
+ * Supported Media: https://developers.google.com/cast/docs/media
+ * Receiver Apps: https://developers.google.com/cast/docs/receiver_apps
+ */
 
 var Device = function(options) {
     events.EventEmitter.call(this);
-    var self = this;
-    self.config = options;
+    this.config = options;
     this.init();
 };
 
 exports.Device = Device;
 util.inherits(Device, events.EventEmitter);
 
-Device.prototype.connect = function(callback) {
-    var self = this;
-    
-    // Always use a fresh client when connecting
-    if (self.client) self.client.close();
-    self.client = new Client();
-    self.client.connect(self.host, function() {
-        debug('connected, launching app ...');
-        self.client.launch(DefaultMediaReceiver, function(err, player) {
-            if (err) {
-                debug(err);
-            } else {
-                self.player = player;
-                self.emit('connected');
-                if (callback) callback();
-            }
-
-            player.on('status', function(status) {
-                if (status){
-                    debug('status broadcast playerState=%s',status.playerState);
-                } else {
-                    debug('-');
-                }
-            });
-
-        });
-    });
-
-    self.client.on('error', function(err) {
-        console.log('Error: %s', err.message);
-        self.connect(self.host);
-        self.client.close();
-    });
-};
-
 Device.prototype.init = function() {
-    var self = this;
-    
-    self.host = self.config.addresses[0];
-    self.playing = false;
+    this.host = this.config.addresses[0];
+    this.playing = false;
 };
 
 Device.prototype.play = function(resource, n, callback) {
     var self = this;
 
-    options = { autoplay: true };
+    // Always use a fresh client when connecting
+    if (self.client) self.client.close();
+    debug('chromecast-js: Connect to host: '+ self.host);
+    //debug('chromecast-js: Config', self.config);
+    self.client = new Client();
+    self.client.connect(self.host, function(err, status) {
+        if (err) {
+            console.error('chromecast-js: Error connecting', err);
+            return callback(err);
+        }
+        debug('chromecast-js: Connected, launching player...');
+        self.client.launch(DefaultMediaReceiver, function(err, player) {
+            if (err) {
+                console.error('chromecast-js: Error launching MediaReceiver', err);
+                return callback(err);
+            }
+            self.player = player;
+            self._privatePlayMedia(resource, n, callback);
+            player.on('status', function(status) {
+                if (status) {
+                    debug('chromecast-js: PlayerState=%s',status.playerState);
+                    // Propagate status event
+                    self.emit('status', status);
+                }
+            });
+        });
+    });
 
-    if (typeof(resource) === 'string'){
+    self.client.on('error', function(err) {
+        debug('chromecast-js Error: %s', err.message);
+        self.client.close();
+        //TODO: Trigger IDLE state or better yet switch to trigger('device:closed') for these events.
+    });
+};
+
+Device.prototype._privatePlayMedia = function(resource, n, callback) {
+    var self = this;
+
+    options = { autoplay: true,
+        currentTime: n || 0 };
+
+    if (typeof(resource) === 'string') {
         var media = {
             contentId: resource,
             contentType: 'video/mp4'
@@ -71,7 +78,7 @@ Device.prototype.play = function(resource, n, callback) {
             contentId: resource.url,
             contentType: 'video/mp4'
         };
-        if (resource.subtitles){
+        if (resource.subtitles) {
             var tracks = [];
             var i = 0;
             for (var each in resource.subtitles ) {
@@ -91,7 +98,7 @@ Device.prototype.play = function(resource, n, callback) {
             media.tracks = tracks;
             options['activeTrackIds'] = [0];
         }
-        if (resource.subtitles_style){
+        if (resource.subtitles_style) {
             media.textTrackStyle = resource.subtitles_style;
             self.subtitles_style = resource.subtitles_style;
         }
@@ -107,25 +114,24 @@ Device.prototype.play = function(resource, n, callback) {
         }
     }
 
-    options['currentTime'] = n || 0;
-
+    debug('chromecast-js: Loading media: %s (%s)', media.contentId, media.contentType);
     self.player.load(media, options, function(err, status) {
-        self.playing = true;
-        if (callback){
-            callback(err,status);
+        if (err) {
+            console.error('chromecast-js: Error loading media', err);
+            return callback(err);
         }
+        self.playing = true;
+        callback(null, status);
     });
 };
 
 Device.prototype.getStatus = function(callback) {
-    var self = this;
-    
-    self.player.getStatus(function(err, status) {
+    this.player.getStatus(function(err, status) {
         if (err) {
-            console.log("getStatus error: %s", err.message);
-        } else {
-            callback(status);
+            debug("chromecast-js.getStatus error: %s", err.message);
+            return callback(err);
         }
+        callback(null, status);
     });
 };
 
@@ -139,87 +145,66 @@ Device.prototype.seek = function(seconds, callback) {
     var self = this;
 
     // Retrieve updated status just before seek
-    self.getStatus(function(newStatus) {
+    self.getStatus(function(err, newStatus) {
+        if (err) return callback(err);
         newCurrentTime = newStatus.currentTime + seconds;
         self.seekTo(newCurrentTime, callback);
     });
 };
 
 Device.prototype.pause = function(callback) {
-    var self = this;
-
-    self.playing = false;
-    self.player.pause(callback);
-};
-
-Device.prototype.setVolume = function(volume, callback) {
-    var self = this;
-
-    self.client.setVolume({ level: volume }, callback);
-};
-
-Device.prototype.setVolumeMuted = function(muted, callback){
-    var self = this;
-
-    self.client.setVolume({ 'muted': muted }, callback);
+    this.playing = false;
+    this.player.pause(callback);
 };
 
 Device.prototype.unpause = function(callback) {
-    var self = this;
-    
-    self.playing = true;
-    self.player.play(callback);
+    this.playing = true;
+    this.player.play(callback);
 };
 
-Device.prototype.stop = function(callback) {
-    var self = this;
-    
-    self.playing = false;
-    self.player.stop(callback);
+Device.prototype.setVolume = function(volume, callback) {
+    this.client.setVolume({ level: volume }, callback);
+};
+
+Device.prototype.setVolumeMuted = function(muted, callback){
+    this.client.setVolume({ muted: muted }, callback);
 };
 
 Device.prototype.subtitlesOff = function(callback) {
-    var self = this;
-    
-    self.player.media.sessionRequest({
+    this.player.media.sessionRequest({
         type: 'EDIT_TRACKS_INFO',
         activeTrackIds: [] // turn off subtitles.
-    }, function(err, status){
-        if (err) callback(err);
-        callback(null, status);
-    });
+    }, callback);
 };
 
-Device.prototype.changeSubtitles = function(num, callback) {
-    var self = this;
-    
-    self.player.media.sessionRequest({
+Device.prototype.changeSubtitles = function(subIdx, callback) {
+    this.player.media.sessionRequest({
         type: 'EDIT_TRACKS_INFO',
-        activeTrackIds: [num] // turn off subtitles.
-    }, function(err, status){
-        if (err) callback(err);
-        callback(null, status);
-    });
+        activeTrackIds: [subIdx]
+    }, callback);
 };
 
-Device.prototype.changeSubtitlesSize = function(num, callback) {
-    var self = this;
-    
-    var newStyle = self.subtitles_style;
-    newStyle.fontScale = num;
-    self.player.media.sessionRequest({
+Device.prototype.changeSubtitlesSize = function(fontScale, callback) {
+    var newStyle = this.subtitles_style;
+    newStyle.fontScale = fontScale;
+    this.player.media.sessionRequest({
         type: 'EDIT_TRACKS_INFO',
         textTrackStyle: newStyle
-    }, function(err, status){
-        if (err) callback(err);
-        callback(null, status);
-    });
+    }, callback);
 };
 
-Device.prototype.close = function(callback) {
-    if ( this.client ) {
-        this.client.close();
-        this.client = null;
-    }
-    if (callback) callback();
-}
+// Stop player, wait 5 sec at stand-by screen, then close client.
+Device.prototype.stop = function(callback) {
+    var self = this;
+    self.player.stop(function() {
+        debug('chromecast-js: Player Stopped');
+        setTimeout(function() {
+            self.client.stop(self.player, function() {
+                self.client.close();
+                self.client = null;
+                debug('chromecast-js: Disconnected');
+                if (callback) callback();
+            });
+        }, 5000);
+    });
+};
