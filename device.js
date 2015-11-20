@@ -69,7 +69,7 @@ Device.prototype.play = function(resource, n, callback) {
     } else {
         var media = {
             contentId: resource.url,
-            contentType: 'video/mp4'
+            contentType: resource.contentType || 'video/mp4'
         };
         if (resource.subtitles){
             var tracks = [];
