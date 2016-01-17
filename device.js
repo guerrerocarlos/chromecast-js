@@ -25,6 +25,8 @@ Device.prototype.connect = function(callback) {
         self.client.launch(DefaultMediaReceiver, function(err, player) {
             if (err) {
                 debug(err);
+                if (callback) callback(err);
+                return;
             } else {
                 self.player = player;
                 self.emit('connected');
