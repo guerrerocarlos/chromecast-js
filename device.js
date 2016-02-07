@@ -34,6 +34,7 @@ Device.prototype.connect = function(callback) {
             player.on('status', function(status) {
                 if (status){
                     debug('status broadcast playerState=%s',status.playerState);
+                    self.emit('status', status)
                 } else {
                     debug('-');
                 }
@@ -123,9 +124,9 @@ Device.prototype.getStatus = function(callback) {
     self.player.getStatus(function(err, status) {
         if (err) {
             console.log("getStatus error: %s", err.message);
-        } else {
-            callback(status);
         }
+        
+        callback(err, status);
     });
 };
 
