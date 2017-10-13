@@ -12,7 +12,7 @@ function Device(options) {
   this.init();
 }
 
-Device.prototype.connect = function(callback) {
+Device.prototype.connect = function(callback, options = {launch: true}) {
   var self = this;
 
   // Always use a fresh client when connecting
@@ -23,31 +23,48 @@ Device.prototype.connect = function(callback) {
   self.client = new Client();
   self.client.connect(self.host, function() {
     debug('connected, launching app ...');
-    self.client.launch(DefaultMediaReceiver, function(err, player) {
-      if (err) {
-        debug(err);
-      } else {
-        self.player = player;
-        self.emit('connected');
-        if (callback) {
-          callback();
-        }
-      }
-
-      player.on('status', function(status) {
-        if (status) {
-          debug('status broadcast playerState=%s', status.playerState);
+    if (options.launch) {
+      self.client.launch(DefaultMediaReceiver, (err, player) => {
+        if (err) {
+          debug(err);
         } else {
-          debug('-');
+          self.player = player;
+          onConnect(self, callback);
         }
+        debugPlayerStatus(player);
       });
-    });
+    } else {
+      onConnect(self, callback);
+    }
   });
 
   this.client.on('error', function(err) {
     debug('Error: %s', err.message);
     self.connect(self.host);
     self.client.close();
+  });
+};
+
+Device.prototype.join = function (session, callback) {
+  const self = this;
+  this.client.join(session, DefaultMediaReceiver, (err, player) => {
+    if (err) {
+      debug(err);
+    } else {
+      self.player = player;
+      onJoin(self, callback);
+    }
+    debugPlayerStatus(player);
+  });
+};
+
+Device.prototype.getSessions = function (callback) {
+  const self = this;
+  if (!self.client) {
+    throw 'Device not connected';
+  }
+  self.client.getSessions((some, sessions) => {
+    callback(sessions);
   });
 };
 
@@ -224,6 +241,31 @@ Device.prototype.close = function(callback) {
     this.client.close();
     this.client = null;
   }
+  if (callback) {
+    callback();
+  }
+};
+
+const debugPlayerStatus = player => {
+  player.on('status', (status) => {
+    if (status) {
+      debug('status broadcast playerState=%s', status.playerState);
+    } else {
+      debug('-');
+    }
+  });
+
+};
+
+const onConnect = (self, callback) => {
+  self.emit('connected');
+  if (callback) {
+    callback();
+  }
+};
+
+const onJoin = (self, callback) => {
+  self.emit('joined');
   if (callback) {
     callback();
   }
